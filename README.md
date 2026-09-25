@@ -4,6 +4,8 @@
 
 A tech-themed Tic-Tac-Toe that runs as a **100% static site** — no server, no build step, no frameworks, no external requests. Open the link on a laptop or a phone and play. Install it and it keeps working offline.
 
+> **Play now:** <https://akshay1224.github.io/tictactech/>
+>
 > **Status:** v1.1.0 · plain HTML + CSS + JavaScript · works on GitHub Pages out of the box
 
 ## Features
