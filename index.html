@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-accent="neon">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0f1a">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7fb">
+  <meta name="description" content="TicTacTech — a tech-themed Tic-Tac-Toe with an unbeatable bot, local 2-player, and four game variants. Works offline on phone and laptop.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="TicTacTech — three in a row, zero dependencies">
+  <meta property="og:description" content="Tech-themed Tic-Tac-Toe: unbeatable bot, local 2P, Infinity, Blitz and Misère variants. Installable, offline, no server.">
+  <title>TicTacTech — three in a row, zero dependencies</title>
+
+  <script>
+    // Apply the saved theme before first paint to avoid a flash of the wrong theme.
+    (function () {
+      try {
+        var raw = localStorage.getItem('ttt.theme');
+        var saved = raw ? JSON.parse(raw) : null;
+        var dark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved === 'light' || saved === 'dark' ? saved : (dark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) { /* storage blocked: keep the default set on <html> */ }
+    })();
+  </script>
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TicTacTech">
+  <link rel="icon" href="./assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+
+  <link rel="stylesheet" href="./css/tokens.css">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/animations.css">
+  <link rel="stylesheet" href="./css/cursor.css">
+</head>
+<body>
+  <!-- Reusable SVG symbols: icons for the toolbar and marks. -->
+  <svg class="visually-hidden" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4m11.4-11.4 1.4-1.4"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+      <symbol id="i-sound" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 9v6h4l5 4V5L8 9H4z"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9a4 4 0 0 1 0 6m2.5-9a8 8 0 0 1 0 12"/></symbol>
+      <symbol id="i-mute" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 9v6h4l5 4V5L8 9H4z"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 9 5 6m0-6-5 6"/></symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+      <symbol id="i-stats" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 20V10m6 10V4m6 16v-7m4 7H2"/></symbol>
+      <symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="m8 14-2 8 6-3 6 3-2-8"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7m0 3.5h.01"/></symbol>
+      <symbol id="i-install" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+      <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="3" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 3v4M9 13h.01M15 13h.01M9 16h6"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="10" r="2.5" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M3 20a6 6 0 0 1 12 0m1-4a4 4 0 0 1 5 4"/></symbol>
+      <symbol id="i-undo" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 14 4 9l5-5"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 9h9a6 6 0 0 1 0 12h-3"/></symbol>
+      <symbol id="i-hint" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 18h6m-5 3h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+      <symbol id="i-reboot" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M20 12a8 8 0 1 1-2.3-5.7"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M20 3v5h-5"/></symbol>
+      <symbol id="i-console" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m7 9 3 3-3 3m5 0h5"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></symbol>
+      <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="2.5" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="2.5" stroke="currentColor" stroke-width="2"/><path stroke="currentColor" stroke-width="2" d="m8.2 10.8 7.6-4.6M8.2 13.2l7.6 4.6"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M9 3v18M15 3v18M3 9h18M3 15h18"/></symbol>
+      <symbol id="i-infinity" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" d="M12 12c-2-3-3.5-4.5-5.5-4.5a4.5 4.5 0 0 0 0 9c2 0 3.5-1.5 5.5-4.5s3.5-4.5 5.5-4.5a4.5 4.5 0 0 1 0 9c-2 0-3.5-1.5-5.5-4.5z"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+      <symbol id="i-flip" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 7h12l-3-3m3 3-3 3M20 17H8l3-3m-3 3 3 3"/></symbol>
+    </defs>
+  </svg>
+
+  <canvas id="bg-canvas" class="bg-canvas" aria-hidden="true"></canvas>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="site-header container">
+    <button class="logo" id="logo" type="button" aria-label="TicTacTech home">
+      <span class="logo__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-grid"/></svg></span>
+      <span class="logo__text">Tic<span class="text-gradient">Tac</span>Tech</span>
+    </button>
+    <p class="tagline mono muted">// three in a row, zero dependencies</p>
+    <div class="toolbar" role="toolbar" aria-label="Quick settings">
+      <button class="icon-btn" id="btn-theme" type="button" aria-label="Switch to light theme" data-cursor="hover">
+        <svg class="icon icon--sun" aria-hidden="true"><use href="#i-sun"/></svg>
+        <svg class="icon icon--moon" aria-hidden="true"><use href="#i-moon"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-sound" type="button" aria-label="Mute sound" aria-pressed="true" data-cursor="hover">
+        <svg class="icon icon--on" aria-hidden="true"><use href="#i-sound"/></svg>
+        <svg class="icon icon--off" aria-hidden="true"><use href="#i-mute"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-install" type="button" aria-label="Install app" hidden data-cursor="hover">
+        <svg class="icon" aria-hidden="true"><use href="#i-install"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-settings" type="button" aria-label="Config" data-modal="modal-settings" data-cursor="hover">
+        <svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-stats" type="button" aria-label="Logs and stats" data-modal="modal-stats" data-cursor="hover">
+        <svg class="icon" aria-hidden="true"><use href="#i-stats"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-badges" type="button" aria-label="Badges" data-modal="modal-badges" data-cursor="hover">
+        <svg class="icon" aria-hidden="true"><use href="#i-badge"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-help" type="button" aria-label="Keyboard shortcuts" data-modal="modal-shortcuts" data-cursor="hover">
+        <svg class="icon" aria-hidden="true"><use href="#i-help"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="app" class="container">
+    <!-- ===================== MENU SCREEN ===================== -->
+    <section class="screen screen--menu" data-screen="menu" aria-labelledby="menu-title">
+      <h1 id="menu-title" class="screen__title" tabindex="-1">Select <span class="text-gradient">mode</span></h1>
+
+      <div class="mode-cards" role="group" aria-label="Play mode">
+        <button class="mode-card is-selected" type="button" data-mode="bot" aria-pressed="true" data-cursor="hover">
+          <span class="mode-card__icon" aria-hidden="true"><svg><use href="#i-bot"/></svg></span>
+          <span class="mode-card__title">Vs BOT.exe</span>
+          <span class="mode-card__desc">Challenge the machine. Three difficulty levels.</span>
+        </button>
+        <button class="mode-card" type="button" data-mode="local" aria-pressed="false" data-cursor="hover">
+          <span class="mode-card__icon" aria-hidden="true"><svg><use href="#i-users"/></svg></span>
+          <span class="mode-card__title">Local 2P</span>
+          <span class="mode-card__desc">Pass and play on one device.</span>
+        </button>
+      </div>
+
+      <fieldset class="segmented segmented--variant" id="variant-group">
+        <legend class="segmented__legend mono">variant</legend>
+        <label class="segmented__opt" data-cursor="hover" title="Three in a row wins. Full board is a draw.">
+          <input type="radio" name="variant" value="classic" checked aria-describedby="rule-classic">
+          <span class="segmented__label">
+            <span class="segmented__name"><svg class="icon" aria-hidden="true"><use href="#i-grid"/></svg>Classic</span>
+            <span class="segmented__rule" id="rule-classic">three in a row wins</span>
+          </span>
+        </label>
+        <label class="segmented__opt" data-cursor="hover" title="Max 3 marks each. Placing a 4th removes your oldest. No draws.">
+          <input type="radio" name="variant" value="infinity" aria-describedby="rule-infinity">
+          <span class="segmented__label">
+            <span class="segmented__name"><svg class="icon" aria-hidden="true"><use href="#i-infinity"/></svg>Infinity</span>
+            <span class="segmented__rule" id="rule-infinity">oldest mark vanishes</span>
+          </span>
+        </label>
+        <label class="segmented__opt" data-cursor="hover" title="Classic rules with a per-move countdown. Timeout auto-commits a random cell.">
+          <input type="radio" name="variant" value="blitz" aria-describedby="rule-blitz">
+          <span class="segmented__label">
+            <span class="segmented__name"><svg class="icon" aria-hidden="true"><use href="#i-bolt"/></svg>Blitz</span>
+            <span class="segmented__rule" id="rule-blitz">beat the clock</span>
+          </span>
+        </label>
+        <label class="segmented__opt" data-cursor="hover" title="Reverse logic: making three in a row LOSES.">
+          <input type="radio" name="variant" value="misere" aria-describedby="rule-misere">
+          <span class="segmented__label">
+            <span class="segmented__name"><svg class="icon" aria-hidden="true"><use href="#i-flip"/></svg>Misère</span>
+            <span class="segmented__rule" id="rule-misere">three in a row loses</span>
+          </span>
+        </label>
+      </fieldset>
+      <p class="variant-desc mono muted small" id="variant-desc" aria-live="polite">Three in a row wins. Full board is a draw.</p>
+
+      <fieldset class="segmented segmented--difficulty" id="difficulty-group">
+        <legend class="segmented__legend mono">difficulty</legend>
+        <label class="segmented__opt" data-cursor="hover" title="Random moves. Rarely takes a win, never blocks.">
+          <input type="radio" name="difficulty" value="easy" aria-describedby="rule-easy">
+          <span class="segmented__label">
+            <span class="segmented__name">easy</span>
+            <span class="segmented__rule" id="rule-easy">sandbox</span>
+          </span>
+        </label>
+        <label class="segmented__opt" data-cursor="hover" title="Wins and blocks one-move threats, but can be forked.">
+          <input type="radio" name="difficulty" value="medium" checked aria-describedby="rule-medium">
+          <span class="segmented__label">
+            <span class="segmented__name">medium</span>
+            <span class="segmented__rule" id="rule-medium">blocks &amp; wins</span>
+          </span>
+        </label>
+        <label class="segmented__opt" data-cursor="hover" title="Perfect play. It cannot be beaten.">
+          <input type="radio" name="difficulty" value="hard" aria-describedby="rule-hard">
+          <span class="segmented__label">
+            <span class="segmented__name">hard</span>
+            <span class="segmented__rule" id="rule-hard">unbeatable</span>
+          </span>
+        </label>
+      </fieldset>
+
+      <div class="menu-actions">
+        <button class="btn btn--primary btn--lg" id="btn-run" type="button" data-cursor="hover">
+          <span class="mono">&gt; Run</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================== GAME SCREEN ===================== -->
+    <section class="screen screen--game" data-screen="game" aria-labelledby="game-title" hidden>
+      <h2 id="game-title" class="visually-hidden" tabindex="-1">Game</h2>
+
+      <div class="game-layout">
+        <div class="hud" aria-label="Scoreboard">
+          <div class="chip chip--p1 is-active" id="chip-p1">
+            <span class="chip__mark" aria-hidden="true"></span>
+            <span class="chip__name" id="name-p1">USER_1</span>
+            <span class="chip__score mono" id="score-p1">0</span>
+          </div>
+          <div class="hud__center">
+            <span class="variant-badge mono" id="variant-badge">classic</span>
+            <div class="timer-ring" id="timer-ring" hidden aria-hidden="true">
+              <svg viewBox="0 0 48 48"><circle class="timer-ring__track" cx="24" cy="24" r="20"/><circle class="timer-ring__fill" cx="24" cy="24" r="20"/></svg>
+              <span class="timer-ring__text mono" id="timer-text">5</span>
+            </div>
+            <p class="turn-indicator mono" id="turn-indicator">&gt; USER_1 turn <span class="blink" aria-hidden="true">▮</span></p>
+          </div>
+          <div class="chip chip--p2" id="chip-p2">
+            <span class="chip__mark" aria-hidden="true"></span>
+            <span class="chip__name" id="name-p2">USER_2</span>
+            <span class="chip__score mono" id="score-p2">0</span>
+          </div>
+        </div>
+
+        <div class="board-wrap">
+          <div class="board no-select" id="board" role="grid" aria-label="Tic Tac Toe board">
+            <button class="board__cell" type="button" role="gridcell" data-index="0" aria-label="Row 1, Column 1: empty" tabindex="0"></button>
+            <button class="board__cell" type="button" role="gridcell" data-index="1" aria-label="Row 1, Column 2: empty" tabindex="-1"></button>
+            <button class="board__cell" type="button" role="gridcell" data-index="2" aria-label="Row 1, Column 3: empty" tabindex="-1"></button>
+            <button class="board__cell" type="button" role="gridcell" data-index="3" aria-label="Row 2, Column 1: empty" tabindex="-1"></button>
+            <button class="board__cell" type="button" role="gridcell" data-index="4" aria-label="Row 2, Column 2: empty" tabindex="-1"></button>
+            <button class="board__cell" type="button" role="gridcell" data-index="5" aria-label="Row 2, Column 3: empty" tabindex="-1"></button>
+            <button class="board__cell" type="button" role="gridcell" data-index="6" aria-label="Row 3, Column 1: empty" tabindex="-1"></button>
+            <button class="board__cell" type="button" role="gridcell" data-index="7" aria-label="Row 3, Column 2: empty" tabindex="-1"></button>
+            <button class="board__cell" type="button" role="gridcell" data-index="8" aria-label="Row 3, Column 3: empty" tabindex="-1"></button>
+            <svg class="board__winline" id="winline" viewBox="0 0 300 300" aria-hidden="true"><line x1="0" y1="0" x2="0" y2="0"/></svg>
+          </div>
+          <p class="visually-hidden" id="live-region" aria-live="polite" aria-atomic="true"></p>
+        </div>
+
+        <div class="action-bar" role="toolbar" aria-label="Game actions">
+          <button class="btn btn--ghost" id="btn-undo" type="button" disabled data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-undo"/></svg><span>Undo</span></button>
+          <button class="btn btn--ghost" id="btn-hint" type="button" disabled data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-hint"/></svg><span>Hint</span></button>
+          <button class="btn btn--ghost" id="btn-reboot" type="button" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-reboot"/></svg><span>Reboot</span></button>
+          <button class="btn btn--ghost" id="btn-console" type="button" aria-expanded="false" aria-controls="console" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-console"/></svg><span>Console</span></button>
+          <button class="btn btn--ghost" id="btn-menu" type="button" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>Menu</span></button>
+        </div>
+
+        <section class="console" id="console" aria-label="Move log" hidden>
+          <div class="console__head mono">
+            <span>&gt; console</span>
+            <button class="console__clear mono" id="btn-console-clear" type="button" aria-label="Clear console">clear</button>
+          </div>
+          <ol class="console__lines mono" id="console-lines"></ol>
+        </section>
+      </div>
+
+      <div class="result-overlay" id="result-overlay" hidden>
+        <div class="result-card" role="dialog" aria-modal="true" aria-labelledby="result-title">
+          <p class="result-card__status mono" id="result-status">BUILD SUCCESSFUL ✔</p>
+          <h3 class="result-card__title" id="result-title">USER_1 wins</h3>
+          <p class="result-card__sub muted" id="result-sub"></p>
+          <div class="result-card__actions">
+            <button class="btn btn--primary" id="btn-again" type="button" data-cursor="hover"><span class="mono">New session</span></button>
+            <button class="btn btn--ghost" id="btn-share" type="button" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-share"/></svg><span>Share result</span></button>
+            <button class="btn btn--ghost" id="btn-result-menu" type="button" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>Menu</span></button>
+          </div>
+          <label class="share-fallback" id="share-fallback" hidden>
+            <span class="small muted">Clipboard blocked — copy this text:</span>
+            <textarea id="share-fallback-text" class="mono" rows="3" readonly></textarea>
+          </label>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer container">
+    <p class="mono muted small"><span class="app-version" id="app-version">v0.0.0</span> · static · offline-ready · no server</p>
+  </footer>
+
+  <!-- ===================== MODALS ===================== -->
+  <dialog class="modal" id="modal-settings" aria-labelledby="settings-title">
+    <form method="dialog" class="modal__box">
+      <header class="modal__head">
+        <h3 id="settings-title" class="mono">config</h3>
+        <button class="icon-btn" type="button" data-close aria-label="Close" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+      </header>
+      <div class="modal__body" id="settings-body">
+        <p class="muted small">Settings are wired in Step 11.</p>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="modal-stats" aria-labelledby="stats-title">
+    <form method="dialog" class="modal__box">
+      <header class="modal__head">
+        <h3 id="stats-title" class="mono">logs</h3>
+        <button class="icon-btn" type="button" data-close aria-label="Close" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+      </header>
+      <div class="modal__body" id="stats-body">
+        <p class="muted small">Stats are wired in Step 11.</p>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="modal-badges" aria-labelledby="badges-title">
+    <form method="dialog" class="modal__box">
+      <header class="modal__head">
+        <h3 id="badges-title" class="mono">badges</h3>
+        <button class="icon-btn" type="button" data-close aria-label="Close" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+      </header>
+      <div class="modal__body" id="badges-body">
+        <p class="muted small">Achievements are wired in Step 11.</p>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="modal-shortcuts" aria-labelledby="shortcuts-title">
+    <form method="dialog" class="modal__box">
+      <header class="modal__head">
+        <h3 id="shortcuts-title" class="mono">shortcuts</h3>
+        <button class="icon-btn" type="button" data-close aria-label="Close" data-cursor="hover"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+      </header>
+      <div class="modal__body">
+        <dl class="shortcuts">
+          <div><dt><kbd>1</kbd>–<kbd>9</kbd></dt><dd>place mark (reading order)</dd></div>
+          <div><dt><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></dt><dd>move focus on board</dd></div>
+          <div><dt><kbd>Enter</kbd> / <kbd>Space</kbd></dt><dd>place mark</dd></div>
+          <div><dt><kbd>R</kbd></dt><dd>reboot game</dd></div>
+          <div><dt><kbd>U</kbd></dt><dd>undo</dd></div>
+          <div><dt><kbd>H</kbd></dt><dd>hint</dd></div>
+          <div><dt><kbd>N</kbd></dt><dd>new session (after game over)</dd></div>
+          <div><dt><kbd>T</kbd></dt><dd>toggle theme</dd></div>
+          <div><dt><kbd>M</kbd></dt><dd>mute / unmute</dd></div>
+          <div><dt><kbd>C</kbd></dt><dd>toggle console</dd></div>
+          <div><dt><kbd>Esc</kbd></dt><dd>close</dd></div>
+          <div><dt><kbd>?</kbd></dt><dd>this help</dd></div>
+        </dl>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal modal--confirm" id="modal-confirm" aria-labelledby="confirm-title">
+    <form method="dialog" class="modal__box">
+      <header class="modal__head">
+        <h3 id="confirm-title" class="mono">abort session?</h3>
+      </header>
+      <div class="modal__body">
+        <p class="muted" id="confirm-text">The current game will be lost.</p>
+        <div class="cluster">
+          <button class="btn btn--primary" type="button" id="btn-confirm-yes" value="yes" data-cursor="hover"><span class="mono">Yes, abort</span></button>
+          <button class="btn btn--ghost" type="button" data-close data-cursor="hover"><span>Cancel</span></button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

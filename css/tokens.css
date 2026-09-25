@@ -1,0 +1,160 @@
+/* tokens.css — design tokens: colors, spacing, radii, shadows, light/dark themes, accent themes, durations, easings */
+
+:root {
+  /* ---- Dark theme (default) ---- */
+  --bg: #0b0f1a;
+  --surface: #121829;
+  --surface-2: #1a2238;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #e6edf7;
+  --muted: #8a97b1;
+
+  --p1: #22d3ee;
+  --p2: #f472b6;
+  /* "ink" variants: accent colors safe for small text (>= 4.5:1). Same as p1/p2 on dark. */
+  --p1-ink: var(--p1);
+  --p2-ink: var(--p2);
+  --accent: var(--p1);
+  --accent-2: var(--p2);
+
+  --ok: #a3e635;
+  --warn: #fbbf24;
+  --danger: #f87171;
+  --violet: #a78bfa;
+
+  --glow-strength: 55%;
+  --glow: 0 0 24px color-mix(in srgb, var(--accent) var(--glow-strength), transparent);
+  --glow-p1: 0 0 24px color-mix(in srgb, var(--p1) var(--glow-strength), transparent);
+  --glow-p2: 0 0 24px color-mix(in srgb, var(--p2) var(--glow-strength), transparent);
+  --shadow-1: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --grid-line: rgba(255, 255, 255, 0.08);
+  --scanline: rgba(255, 255, 255, 0.03);
+  --overlay: rgba(5, 8, 16, 0.72);
+
+  /* ---- Typography ---- */
+  --font-ui: "Segoe UI", Roboto, Inter, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", Consolas, "SF Mono", monospace;
+  --fs-0: clamp(0.75rem, 0.72rem + 0.2vw, 0.85rem);
+  --fs-1: clamp(0.85rem, 0.8rem + 0.3vw, 1rem);
+  --fs-2: clamp(1rem, 0.95rem + 0.4vw, 1.15rem);
+  --fs-3: clamp(1.15rem, 1.05rem + 0.6vw, 1.4rem);
+  --fs-4: clamp(1.4rem, 1.2rem + 1vw, 1.9rem);
+  --fs-5: clamp(1.8rem, 1.4rem + 2vw, 2.6rem);
+  --fs-hero: clamp(2rem, 1.2rem + 4vw, 4rem);
+  --lh-tight: 1.15;
+  --lh-base: 1.5;
+
+  /* ---- Spacing ---- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+
+  /* ---- Radii ---- */
+  --r-1: 8px;
+  --r-2: 14px;
+  --r-3: 22px;
+  --r-pill: 999px;
+
+  /* ---- Layout ---- */
+  --board-size: min(92vw, 62vh, 520px);
+  --cell-gap: clamp(6px, 1.5vw, 14px);
+  --touch-min: 44px;
+  --container-max: 1100px;
+
+  /* ---- Z-index scale ---- */
+  --z-bg: -1;
+  --z-base: 0;
+  --z-board: 10;
+  --z-hud: 20;
+  --z-overlay: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+  --z-cursor: 1000;
+
+  /* ---- Motion ---- */
+  --d-fast: 120ms;
+  --d-base: 220ms;
+  --d-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@supports (height: 1dvh) {
+  :root {
+    --board-size: min(92vw, 62dvh, 520px);
+  }
+}
+
+/* ---- Light theme ---- */
+:root[data-theme="light"] {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-2: #eef2f9;
+  --border: rgba(15, 23, 42, 0.1);
+  --text: #0f172a;
+  --muted: #526079;
+
+  --p1: #0891b2;
+  --p2: #db2777;
+  --p1-ink: #0e7490;
+  --p2-ink: #be185d;
+
+  --ok: #65a30d;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --violet: #7c3aed;
+
+  --glow-strength: 35%;
+  --shadow-1: 0 2px 8px rgba(15, 23, 42, 0.08);
+  --shadow-2: 0 10px 30px rgba(15, 23, 42, 0.12);
+  --grid-line: rgba(15, 23, 42, 0.1);
+  --scanline: rgba(15, 23, 42, 0.03);
+  --overlay: rgba(245, 247, 251, 0.78);
+}
+
+/* ---- Accent themes (override player colors) ---- */
+:root[data-accent="neon"] {
+  --p1: #22d3ee;
+  --p2: #f472b6;
+}
+:root[data-accent="neon"][data-theme="light"] {
+  --p1: #0891b2;
+  --p2: #db2777;
+  --p1-ink: #0e7490;
+  --p2-ink: #be185d;
+}
+
+:root[data-accent="synthwave"] {
+  --p1: #fb923c;
+  --p2: #c084fc;
+}
+:root[data-accent="synthwave"][data-theme="light"] {
+  --p1: #ea580c;
+  --p2: #9333ea;
+  --p1-ink: #c2410c;
+  --p2-ink: #7e22ce;
+}
+
+:root[data-accent="matrix"] {
+  --p1: #22c55e;
+  --p2: #bef264;
+  --bg: #050806;
+  --surface: #0a120c;
+  --surface-2: #0f1a12;
+}
+:root[data-accent="matrix"][data-theme="light"] {
+  --p1: #15803d;
+  --p2: #4d7c0f;
+  --p1-ink: #166534;
+  --p2-ink: #3f6212;
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-2: #eef2f9;
+}

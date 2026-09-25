@@ -1,0 +1,15 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# Node (only used for tests and the icon script — nothing is installed)
+node_modules/
+npm-debug.log*
+
+# Local reports
+lh-*.json
+*.log

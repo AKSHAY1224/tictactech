@@ -1,0 +1,146 @@
+/* cursor.css — custom cursor styles (fine-pointer devices only) */
+
+/* Native cursor hidden only while the custom cursor is active (html.has-custom-cursor is set by cursor.js). */
+@media (hover: hover) and (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+/* The layer is a manual popover (top layer) so it paints above open <dialog>s; every
+   default popover style (border, padding, background, auto size) is neutralised here. */
+.cursor-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: visible;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+}
+
+.cursor-layer::backdrop {
+  background: transparent;
+  pointer-events: none;
+}
+
+.cursor-dot,
+.cursor-ring,
+.cursor-burst {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: var(--z-cursor);
+  border-radius: 50%;
+  will-change: transform;
+}
+
+/* Fallback (no Popover API): the native cursor is restored inside open modals. */
+html.has-modal:not(.has-custom-cursor) dialog.modal,
+html.has-modal:not(.has-custom-cursor) dialog.modal * {
+  cursor: auto;
+}
+
+html.has-modal:not(.has-custom-cursor) dialog.modal button,
+html.has-modal:not(.has-custom-cursor) dialog.modal label,
+html.has-modal:not(.has-custom-cursor) dialog.modal select {
+  cursor: pointer;
+}
+
+.cursor-dot,
+.cursor-ring {
+  opacity: 0;
+  transition: opacity 160ms var(--ease-out);
+}
+
+.cursor-dot.is-visible,
+.cursor-ring.is-visible {
+  opacity: 1;
+}
+
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: var(--accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+.cursor-ring {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 75%, transparent);
+  transition: opacity 160ms var(--ease-out), border-color var(--d-base) var(--ease-out), background-color var(--d-base) var(--ease-out);
+}
+
+.cursor-ring.is-hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  box-shadow: var(--glow);
+}
+
+.cursor-ring.is-taken {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.cursor-ring.is-taken::after {
+  content: "×";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 700 16px/1 var(--font-mono);
+  color: var(--danger);
+}
+
+.cursor-ring.is-text {
+  border-radius: 2px;
+  border-color: var(--text);
+}
+
+.cursor-burst {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 2px solid var(--accent);
+  animation: cursor-burst 420ms var(--ease-out) forwards;
+}
+
+.cursor-trail {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: calc(var(--z-cursor) - 1);
+}
+
+@keyframes cursor-burst {
+  from {
+    opacity: 0.8;
+    transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(2.2);
+  }
+}
+
+/* Reduced motion: never activate. */
+@media (prefers-reduced-motion: reduce) {
+  .cursor-dot,
+  .cursor-ring,
+  .cursor-burst,
+  .cursor-trail {
+    display: none !important;
+  }
+}

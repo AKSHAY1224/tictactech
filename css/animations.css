@@ -1,0 +1,217 @@
+/* animations.css — keyframes, transitions, reduced-motion overrides */
+
+/* ---- Keyframes (transform + opacity only) ---- */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-6px, 0, 0);
+  }
+  40% {
+    transform: translate3d(6px, 0, 0);
+  }
+  60% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  80% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+@keyframes blink-cursor {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes draw-mark {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fill-in {
+  to {
+    fill-opacity: 1;
+  }
+}
+
+@keyframes vanish {
+  to {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes edge-glow {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+    text-shadow: none;
+  }
+  25% {
+    transform: translate(-2px, 1px);
+    text-shadow: 2px 0 var(--p2), -2px 0 var(--p1);
+  }
+  50% {
+    transform: translate(2px, -1px);
+    text-shadow: -2px 0 var(--p2), 2px 0 var(--p1);
+  }
+  100% {
+    transform: translate(0);
+    text-shadow: none;
+  }
+}
+
+@keyframes dots-reveal {
+  to {
+    width: 1.9em;
+  }
+}
+
+@keyframes hint-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent), var(--glow);
+  }
+}
+
+/* ---- Utility animation classes ---- */
+.anim-fade-in {
+  animation: fade-in var(--d-base) var(--ease-out) both;
+}
+
+.anim-slide-up {
+  animation: slide-up var(--d-slow) var(--ease-out) both;
+}
+
+.anim-slide-down {
+  animation: slide-down var(--d-slow) var(--ease-out) both;
+}
+
+.anim-pop {
+  animation: pop var(--d-slow) var(--ease-spring) both;
+}
+
+.anim-pulse {
+  animation: pulse-glow 1.4s var(--ease-in-out) infinite;
+}
+
+.anim-shake {
+  animation: shake var(--d-slow) var(--ease-out) both;
+}
+
+.anim-spin {
+  animation: spin 1s linear infinite;
+}
+
+.blink {
+  animation: blink-cursor 1s steps(1, end) infinite;
+}
+
+/* ---- Theme cross-fade: only color properties, never `all` ---- */
+.theme-fade {
+  transition: background-color var(--d-base) var(--ease-out), color var(--d-base) var(--ease-out),
+    border-color var(--d-base) var(--ease-out), box-shadow var(--d-base) var(--ease-out);
+}
