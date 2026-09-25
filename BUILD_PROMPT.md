@@ -2,7 +2,7 @@
 
 > **How to use this file (read this first):**
 >
-> 1. Open a fresh coding-model session (Claude Code, Cursor, etc.) inside this folder: `Akshays_Project`.
+> 1. Open a fresh coding-model session inside this folder: `Akshays_Project`.
 > 2. Paste **everything below the line "PROMPT STARTS HERE"** as the first message.
 > 3. Then send: `Start Step 0.`
 > 4. The model builds ONE step and stops with the line `STEP N COMPLETE — READY FOR QC`.

@@ -156,6 +156,4 @@ Every time you change files after the first deploy, bump the cache version so in
 
 ## Credits
 
-Built by Akshay with Claude Code, following the step-by-step plan in `BUILD_PROMPT.md` and the quality gates in `QC_CHECKLIST.md`.
-
-Released under the [MIT License](LICENSE).
+Built by Akshay Pratap Singh, following the step-by-step plan in `BUILD_PROMPT.md` and the quality gates in `QC_CHECKLIST.md`.
