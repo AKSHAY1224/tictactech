@@ -22,14 +22,6 @@ A tech-themed Tic-Tac-Toe that runs as a **100% static site** — no server, no 
 - 📱 **Installable PWA** — offline after the first visit, update toast when a new version is deployed.
 - 🕹️ An easter egg. Try the Konami code (or tap the logo seven times on a phone).
 
-## Screenshots
-
-Add your own after deploying (`Settings → Pages` link → take screenshots on a laptop and a phone):
-
-| Menu | Game | Phone |
-|---|---|---|
-| _screenshot_ | _screenshot_ | _screenshot_ |
-
 ## Play modes and variants
 
 | Mode | What it is |
@@ -93,37 +85,6 @@ node --test
 ```
 
 The suite covers the board and variant rules, the storage wrapper, the share helpers, and the AI — including an **exhaustive proof** that `hard` never loses in Classic and Misère whether it moves first or second.
-
-## Deploy to GitHub Pages
-
-1. Create a **public** repository on GitHub (for example `tictactech`).
-2. Upload **all** files and folders from this project, including the hidden `.nojekyll` file (it tells GitHub not to run Jekyll, which would otherwise ignore some files).
-3. In the repository, open **Settings → Pages**.
-4. Under **Build and deployment**, set **Source** to **Deploy from a branch**, choose branch **`main`** and folder **`/ (root)`**, then click **Save**.
-5. Wait 1–3 minutes. The page appears at:
-
-   ```
-   https://<your-username>.github.io/<repository-name>/
-   ```
-
-6. Share that link. It opens on any laptop or phone, and can be installed from the browser menu ("Install app" / "Add to Home Screen").
-
-### Publishing an update
-
-Every time you change files after the first deploy, bump the cache version so installed copies pick up the new build:
-
-- open `sw.js` and change `const CACHE_VERSION = 'ttt-v1.1.0';` to a new value (for example `ttt-v1.1.1`),
-- optionally bump `APP_VERSION` in `js/main.js` (shown in the footer),
-- push. Open tabs will show an **update available — reload** toast.
-
-### Troubleshooting
-
-| Symptom | Fix |
-|---|---|
-| Blank page on GitHub Pages | Make sure `.nojekyll` was uploaded and that the site is served from the repository root. All paths in this project are relative (`./…`), so sub-paths work. |
-| Old version keeps showing | Bump `CACHE_VERSION` in `sw.js` and push again; or hard-reload (Ctrl/Cmd + Shift + R). |
-| "Install" button missing | Install requires HTTPS (GitHub Pages provides it) and a valid manifest; it only appears once the browser considers the app installable. |
-| No sound | Sound starts after your first tap or click (browser autoplay rules). Check the speaker button in the toolbar and the device volume. |
 
 ## Project structure
 
